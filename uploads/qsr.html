@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QSAR</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e3f5dc;
+            text-align: center;
+            padding: 20px;
+            font-size: 16px;
+        }
+
+        .container {
+            margin-top: 10px;
+            max-width: 800px;
+            background-color: rgb(253, 252, 252);
+            padding: 28px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(86, 212, 75, 0.2);
+            margin: auto;
+        }
+
+        h2 {
+            color: #2e7d32;
+        }
+        .row{
+
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        
+           
+
+        .left-panel, .right-panel {
+            width: 48%;
+            text-align: left;
+        }
+
+        .right-panel {
+            border-left: 3px solid #81c784;
+            background-color: #f1f8e9;
+            border-radius: 5px;
+            padding: 15px;
+        }
+
+        .file-input {
+            width: 90%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #b8ceb9;
+            background: #fbfffb;
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 5px;
+            display: inline-block;
+            
+        }
+        
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #message {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #c62828;
+            background-color: #ffcdd2;
+            padding: 5px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .success {
+            color: #1b5e20;
+            background-color: #c8e6c9;
+            padding: 5px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .file-content {
+            height: 250px;
+            overflow-y: auto;
+            border: 2px solid #81c784;
+            padding: 10px;
+            background-color: #ffffff;
+            text-align: left;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        .radio-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .radio-group input {
+            margin-right: 5px;
+        }
+
+    .nav-links {
+        display: flex;
+        justify-content: space-between;
+        width: 95%;
+        padding: 10px 20px;
+    }
+
+    .nav-links a {
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        color: #098d1b; /*text color*/
+        transition: color 0.3s ease-in-out;
+        position: relative;
+    }
+    
+    .nav-links a:hover {
+        color: #ff4e08; 
+    }
+
+    .nav-links a:hover::after {
+        width: 100%;
+    }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="nav-links" id="index">
+            <a href='index.html'>⬅ Home</a>
+             <h2>QSAR FILE VALIDATOR</h2></div>
+
+        <form id="fileUploadForm">
+            <div class="row">
+                <!-- Left Panel (File Upload) -->
+                <div class="left-panel">
+                    
+
+                    <label>CSV File <b> With </b>Activity:</label>
+                    <input type="file" id="csvWithActivity" class="file-input" accept=".csv">
+                    
+                    <br> <br>
+
+                    <label>CSV File <b> Without </b>Activity:</label>
+                    <input type="file" id="csvWithoutActivity" class="file-input" accept=".csv">
+                    
+                    <br> <br>
+                    <div class="button-container" justify-content="center">
+                        <button type="button" class="btn btn-primary" onclick="uploadFiles()">Upload</button>
+                        <button type="button" class="btn btn-success" onclick="validateFiles()">Validate</button>
+                        <button type="button" class="btn btn-danger" onclick="removeFiles()">Remove</button>
+                    </div>
+
+                    <div id="message"></div>
+                </div>
+
+                <!-- Right Panel (File Display) -->
+                <div class="right-panel">
+                    <h3>View Uploaded Files</h3>
+
+                    <div class="radio-group">
+                        <label><input type="radio" name="displayFile" value="withActivity" checked onchange="toggleFileDisplay()"> With Activity</label>
+                        <label><input type="radio" name="displayFile" value="withoutActivity" onchange="toggleFileDisplay()"> Without Activity</label>
+                    </div>
+
+                    <pre id="fileContent" class="file-content">No file content available.</pre>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let fileData = { withActivity: "", withoutActivity: "" };
+    
+        function uploadFiles() {
+            const messageDiv = document.getElementById("message");
+            messageDiv.innerHTML = "";
+            fileData = { withActivity: "", withoutActivity: "" };
+    
+            const files = {
+                withActivity: document.getElementById("csvWithActivity").files[0],
+                withoutActivity: document.getElementById("csvWithoutActivity").files[0]
+            };
+    
+            Object.keys(files).forEach(type => {
+                if (files[type]) {
+                    if (!files[type].name.endsWith(".csv")) {
+                        messageDiv.innerHTML += `<span class='error'>Error: Only CSV files are allowed for ${type.replace("with", "With").replace("without", "Without")} Activity.</span><br>`;
+                        return;
+                    }
+                    readFileContent(files[type], type);
+                    messageDiv.innerHTML += `<span class='success'>${type.replace("with", "With").replace("without", "Without")} Activity file uploaded successfully.</span><br>`;
+                } else {
+                    messageDiv.innerHTML += `<span class='error'>Error: ${type.replace("with", "With").replace("without", "Without")} Activity file is missing.</span><br>`;
+                }
+            });
+        }
+    
+        function readFileContent(file, type) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                fileData[type] = e.target.result;
+                toggleFileDisplay();
+            };
+            reader.readAsText(file);
+        }
+        function validateFiles() {
+    const messageDiv = document.getElementById("message");
+    messageDiv.innerHTML = "";
+
+    if (!fileData.withActivity || !fileData.withoutActivity) {
+        messageDiv.innerHTML += `<span class='error'>Please upload both CSV files before validation.</span><br>`;
+        return;
+    }
+
+    let errors = { withActivity: "", withoutActivity: "" };
+
+    Object.keys(fileData).forEach(type => {
+        if (!fileData[type]) {
+            errors[type] += `<span class='error'>Error: ${type.replace("with", "With").replace("without", "Without")} Activity file is missing.</span><br>`;
+            return;
+        }
+
+        const lines = fileData[type].split(/\r?\n/).map(line => line.trim()).filter(line => line.length > 0);
+        if (lines.length < 2) {
+            errors[type] += `<span class='error'>Error: ${type.replace("with", "With").replace("without", "Without")} Activity file is empty or invalid.</span><br>`;
+            return;
+        }
+
+        // Extract headers (removes BOM, trims spaces, converts to lowercase)
+        let headers = lines[0].replace(/\uFEFF/g, "").replace(/"/g, "").split(/,|;|\t/).map(h => h.trim().toLowerCase());
+
+        // Define required columns (normalized to lowercase)
+        const requiredCols = type === "withActivity" ? ["cmbl", "name", "smiles", "activity"] : ["cmbl", "name", "smiles"];
+
+        // Convert headers array to a Set (faster lookups)
+        const headersSet = new Set(headers.map(h => h.toLowerCase()));
+
+        // Check if required columns are present (case insensitive)
+        const missingCols = requiredCols.filter(col => !headersSet.has(col.toLowerCase()));
+
+        if (type === "withoutActivity" && headersSet.has("activity")) {
+            errors[type] += `<span class='error'>Error: "Without Activity" file should not contain an "Activity" column.</span><br>`;
+            return;
+        }
+
+        if (missingCols.length > 0) {
+            errors[type] += `<span class='error'>Error: Missing columns in ${type.replace("with", "With").replace("without", "Without")} Activity file: ${missingCols.join(", ")}.</span><br>`;
+            return; // Skip further validation if structure is incorrect
+        }
+
+        // Perform data validation only when structure is valid
+        errors[type] += validateData(lines, headers, type);
+    });
+
+    messageDiv.innerHTML += `<strong>With Activity File</strong><br>${errors.withActivity || "<span class='success'>No errors found.</span><br>"}`;
+    messageDiv.innerHTML += `<strong>Without Activity File</strong><br>${errors.withoutActivity || "<span class='success'>No errors found.</span><br>"}`;
+}
+
+    
+
+
+
+
+        // function validateFiles() {
+        //     const messageDiv = document.getElementById("message");
+        //     messageDiv.innerHTML = "";
+    
+        //     if (!fileData.withActivity || !fileData.withoutActivity) {
+        //         messageDiv.innerHTML += `<span class='error'>Please upload both CSV files before validation.</span><br>`;
+        //         return;
+        //     }
+    
+        //     let errors = { withActivity: "", withoutActivity: "" };
+    
+        //     Object.keys(fileData).forEach(type => {
+        //         if (!fileData[type]) {
+        //             errors[type] += `<span class='error'>Error: ${type.replace("with", "With").replace("without", "Without")} Activity file is missing.</span><br>`;
+        //             return;
+        //         }
+    
+        //         const lines = fileData[type].split("\n").map(line => line.trim()).filter(line => line.length > 0);
+        //         if (lines.length < 2) {
+        //             errors[type] += `<span class='error'>Error: ${type.replace("with", "With").replace("without", "Without")} Activity file is empty or invalid.</span><br>`;
+        //             return;
+        //         }
+    
+        //         const headers = lines[0].replace(/"/g, "").split(",").map(h => h.trim().toLowerCase());
+    
+                
+        //         const requiredCols = type === "withActivity" ? ["cmbl", "name", "smiles", "activity"] : ["cmbl", "name", "smiles"];
+    
+        //         // Check if all required columns are present
+        //         const missingCols = requiredCols.filter(col => !headers.includes(col));
+    
+        //         if (missingCols.length > 0) {
+        //             errors[type] += `<span class='error'>Error: Missing columns in ${type.replace("with", "With").replace("without", "Without")} Activity file: ${missingCols.join(", ")}.</span><br>`;
+        //             return; // Skip further validation if structure is incorrect
+        //         }
+    
+        //         // Perform data validation only when structure is valid
+        //         errors[type] += validateData(lines, headers, type);
+        //     });
+    
+        
+        //     messageDiv.innerHTML += `<strong>With Activity File</strong><br>${errors.withActivity || "<span class='success'>No errors found.</span><br>"}`;
+        //     messageDiv.innerHTML += `<strong>Without Activity File</strong><br>${errors.withoutActivity || "<span class='success'>No errors found.</span><br>"}`;
+        // }
+    
+        function validateData(lines, headers, type) {
+            const colIndexes = {
+                cmbl: headers.indexOf("cmbl"),
+                name: headers.indexOf("name"),
+                smiles: headers.indexOf("smiles"),
+                activity: headers.indexOf("activity") // Only present in withActivity
+            };
+    
+            let nullErrors = { cmbl: [], name: [], smiles: [], activity: [] };
+            let invalidTypeErrors = { cmbl: [], name: [], smiles: [], activity: [] };
+            let errorMessages = "";
+    
+            for (let i = 1; i < lines.length; i++) { // Process all rows
+                const row = lines[i].split(",").map(v => v.trim());
+    
+                Object.keys(colIndexes).forEach(col => {
+                    if (colIndexes[col] !== -1) {
+                        const value = row[colIndexes[col]];
+    
+                        if (!value || value.toLowerCase() === "null") {
+                            nullErrors[col].push(i + 1);
+                        } else {
+                            // Check datatype
+                            if (col === "activity") { // Activity should be a number
+                                if (isNaN(value)) {
+                                    invalidTypeErrors[col].push(i + 1);
+                                }
+                            } else {
+                                if (!isNaN(value)) { // CMBL, Name, SMILES should be a string
+                                    invalidTypeErrors[col].push(i + 1);
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+    // Summarized Error Formatting
+    Object.keys(nullErrors).forEach(col => {
+            if (nullErrors[col].length > 0 || invalidTypeErrors[col].length > 0) {
+                errorMessages += `<span class='error'><strong>${col.toUpperCase()} col:</strong><br>`;
+
+                if (nullErrors[col].length > 0) {
+                    errorMessages += `&nbsp;&nbsp;&nbsp;&nbsp;Row ${nullErrors[col].join(", ")} have null values.<br>`;
+                }
+
+                if (invalidTypeErrors[col].length > 0) {
+                    errorMessages += `&nbsp;&nbsp;&nbsp;&nbsp;Row ${invalidTypeErrors[col].join(", ")} have incorrect data type.<br>`;
+                }
+
+                errorMessages += `</span><br>`;
+            }
+        });
+
+        return errorMessages;
+    }
+
+    
+        function toggleFileDisplay() {
+            document.getElementById("fileContent").textContent = fileData[document.querySelector('input[name="displayFile"]:checked').value] || "No file content available.";
+        }
+    
+        function removeFiles() {
+            document.getElementById("fileUploadForm").reset();
+            document.getElementById("fileContent").textContent = "No file content available.";
+            document.getElementById("message").textContent = "";
+            fileData = { withActivity: "", withoutActivity: "" };
+        }
+    </script>
+    
+
+    
+    
+    
+
+</body>
+</html>
+
+
+   

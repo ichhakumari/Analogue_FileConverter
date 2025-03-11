@@ -1,0 +1,386 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sim</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e3f5dc;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            display: flex;
+            justify-content: space-between;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid rgb(216, 245, 212);
+            box-shadow: 0 5px 15px rgba(211, 241, 207, 0.2);
+            margin: auto;
+        }
+
+        .col-left, .col-right {
+            width: 48%;
+            padding: 15px;
+        }
+
+        .col-left {
+            text-align: left;
+        }
+
+        .col-right {
+            border-left: 3px solid #81c784;
+            background-color: #f1f8e9;
+            border-radius: 5px;
+            text-align: left;
+        }
+
+        h2 {
+            color: #2e7d32;
+            text-align: center;
+        }
+
+        h3 {
+            color: #000000;
+        }
+
+        .radio-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            background-color: #c8e6c9;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .radio-group label:hover {
+            background-color: #81c784;
+        }
+
+        .radio-group input[type="radio"] {
+            margin-right: 5px;
+            transform: scale(1.3);
+            accent-color: #2e7d32;
+        }
+
+        .file-input {
+            width: 95%;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #c9d3c9;
+            background: #f9fff9;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #message {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #c62828;
+            background-color: #ffcdd2;
+            padding: 5px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .success {
+            color: #1b5e20;
+            background-color: #c8e6c9;
+            padding: 5px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .file-content {
+            height: 290px;
+            overflow-y: auto;
+            border: 2px solid #81c784;
+            padding: 10px;
+            background-color: #ffffff;
+            text-align: left;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        .nav-links {
+            display: flex;
+            justify-content: space-between;
+            width: 95%;
+            padding: 10px;
+        }
+        .nav-links a:hover {
+        color: #ff4e08; 
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: #106317;
+            transition: color 0.3s ease-in-out;
+            position: relative;
+        }
+        .nav-links h2{
+            text-align: right;
+        }
+       
+
+    </style>
+</head>
+<body>
+
+    <div class="container mt-5">
+        
+
+    
+    <div class="col-left">
+        <div class="nav-links" id="index">
+            <a href='index.html'>⬅ Home</a>
+            <h2>Sim Ana File Validator</h2>
+</div>
+        
+        <h3>Select File Type</h3>
+        <div class="radio-group">
+            <label><input type="radio" name="fileType" value="protein" onchange="toggleFileInputs()"> Protein</label>
+            <label><input type="radio" name="fileType" value="proteinProtein" onchange="toggleFileInputs()"> Protein-Protein</label>
+            <label><input type="radio" name="fileType" value="proteinLigand" onchange="toggleFileInputs()"> Protein-Ligand</label>
+        </div>
+
+       
+        <h3>Upload .PDB File</h3>
+        <input type="file" id="proteinFile" class="file-input" accept=".pdb">
+        <input type="file" id="ligandFile" class="file-input" accept=".pdb" style="display: none;">
+
+        <br>
+        <div class="btn-container">
+            <button class="btn btn-success" onclick="displayFileContent()">Upload</button>
+            <button class="btn btn-primary" onclick="validateFiles()">Validate File</button>
+            <button class="btn btn-danger" onclick="removeFiles()">Remove</button>
+        </div>
+
+        <div id="message"></div>
+    </div>
+
+    <div class="col-right">
+        <div class="header">
+            
+        </div>
+      
+        <h3>Uploaded File Content:</h3>
+        
+        <div class="radio-group">
+            <label><input type="radio" name="displayFile" value="protein" onchange="toggleFileDisplay()"> Protein</label>
+            <label><input type="radio" name="displayFile" value="ligand" onchange="toggleFileDisplay()" disabled> Ligand</label>
+        </div>
+
+        <pre id="fileContent" class="file-content"></pre>
+    </div>
+</div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("proteinFile").style.display = "block";
+});
+
+function toggleFileInputs() {
+    let selectedType = document.querySelector('input[name="fileType"]:checked').value;
+    document.getElementById("proteinFile").style.display = "block";
+    document.getElementById("ligandFile").style.display = (selectedType === "proteinLigand") ? "block" : "none";
+
+    
+    document.querySelector('input[name="displayFile"][value="ligand"]').disabled = (selectedType !== "proteinLigand");
+}
+
+function displayFileContent() {
+    const proteinFile = document.getElementById("proteinFile").files[0];
+    const ligandFile = document.getElementById("ligandFile").files[0];
+    const fileContentDiv = document.getElementById("fileContent");
+    const messageDiv = document.getElementById("message");
+
+    fileContentDiv.textContent = "";
+    messageDiv.innerHTML = "";
+
+    if (!proteinFile || !proteinFile.name.endsWith(".pdb")) {
+        messageDiv.innerHTML += "<span class='error'>Protein file is missing or not a .pdb file.</span><br>";
+    } else {
+        readFileContent(proteinFile, "protein");
+        messageDiv.innerHTML += "<span class='success'>Protein file uploaded successfully.</span><br>";
+    }
+
+    if (ligandFile) {
+        if (!ligandFile.name.endsWith(".pdb")) {
+            messageDiv.innerHTML += "<span class='error'>Ligand file must be a .pdb file.</span><br>";
+        } else {
+            readFileContent(ligandFile, "ligand");
+            messageDiv.innerHTML += "<span class='success'>Ligand file uploaded successfully.</span><br>";
+        }
+    }
+}
+
+// Helper function to read file content
+function readFileContent(file, type) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        document.getElementById("fileContent").dataset[type] = e.target.result;
+        toggleFileDisplay();
+    };
+    reader.readAsText(file);
+}
+
+
+function toggleFileDisplay() {
+    const selectedFile = document.querySelector('input[name="displayFile"]:checked').value;
+    const fileContentDiv = document.getElementById("fileContent");
+
+    fileContentDiv.textContent = fileContentDiv.dataset[selectedFile] || "No file content available.";
+}
+
+// Validate Files
+function validateFiles() {
+    const proteinFile = document.getElementById("proteinFile").files[0];
+    const ligandFile = document.getElementById("ligandFile").files[0];
+    const selectedType = document.querySelector('input[name="fileType"]:checked');
+    const messageDiv = document.getElementById("message");
+
+    messageDiv.innerHTML = "";
+
+    if (!selectedType) {
+        messageDiv.innerHTML = "<span class='error'>Please select a file type.</span>";
+        return;
+    }
+
+  
+    if (!proteinFile || !proteinFile.name.endsWith(".pdb")) {
+        messageDiv.innerHTML += "<span class='error'>Protein file is missing or not a .pdb file.</span><br>";
+    } else {
+        validatePDB(proteinFile, "Protein", messageDiv);
+    }
+
+    if (selectedType.value === "proteinLigand") {
+        if (!ligandFile) {
+            messageDiv.innerHTML += "<span class='error'>Please upload both Protein and Ligand PDB files.</span><br>";
+        } else if (!ligandFile.name.endsWith(".pdb")) {
+            messageDiv.innerHTML += "<span class='error'>Ligand file must be a .pdb file.</span><br>";
+        } else {
+            validatePDB(ligandFile, "Ligand", messageDiv);
+        }
+    }
+}
+
+// Validate .PDB File Content
+function validatePDB(file, fileType, messageDiv) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const content = e.target.result.split("\n");
+        let atomCheck = false;
+        let ligandCheck = false;
+        let ligandColumnCheck = false;
+
+        for (let line of content) {
+            if (line.startsWith("ATOM")) {
+                atomCheck = true;
+            }
+            if (line.startsWith("HETATM")) {
+                ligandCheck = true;
+            }
+         
+            if (line.includes("LIG")) {
+                ligandColumnCheck = true;
+            }
+        }
+
+        if (fileType === "Protein" && (!atomCheck || ligandCheck)) {
+            messageDiv.innerHTML += `<span class='error'>${fileType} file error: Must contain 'ATOM' only, no 'HETATM'.</span><br>`;
+            return;
+        }
+
+        if (fileType === "Ligand" && (!atomCheck && !ligandCheck)) {
+            messageDiv.innerHTML += `<span class='error'>${fileType} file error: Must contain either 'ATOM' or 'HETATM'.</span><br>`;
+            return;
+        }
+        if (fileType === "Ligand" && !ligandColumnCheck) {
+            messageDiv.innerHTML += `<span class='error'>${fileType} file error: No column contains 'LIG'.</span><br>`;
+            return;
+        }
+
+        messageDiv.innerHTML += `<span class='success'>${fileType} file validated successfully.</span><br>`;
+    };
+
+    reader.readAsText(file);
+}
+
+function removeFiles() {
+    document.getElementById("proteinFile").value = "";
+    document.getElementById("ligandFile").value = "";
+    document.getElementById("fileContent").textContent = "";
+    document.getElementById("message").textContent = "";
+}
+
+
+
+</script>
+
+</body>
+</html>
+
+
+
+
