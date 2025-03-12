@@ -14,8 +14,8 @@ RUN pip install -r requirements.txt
 # Collect static files (optional)
 RUN python manage.py collectstatic --noinput || true
 
-# Expose port (doesn't set it, just for documentation)
+# Expose the port (for documentation, not necessary for binding)
 EXPOSE 8000
 
-# Start Django app with Gunicorn using Railway's PORT
-CMD ["gunicorn", "file_converstion.wsgi:application", "--bind", "0.0.0.0:${PORT}"]
+# Correctly use the PORT environment variable in CMD
+CMD sh -c "gunicorn file_converstion.wsgi:application --bind 0.0.0.0:$PORT"
