@@ -1,20 +1,20 @@
 # Use official Python image
 FROM python:3.10
 
-# Set the working directory
+# Set working directory inside the container
 WORKDIR /app
 
-# Copy project 
+# Copy project files
 COPY . .
 
 # Install dependencies
 RUN pip install --upgrade pip setuptools wheel
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt  
 
-# Collect static files
-RUN python manage.py collectstatic --noinput
+# Collect static files (optional)
+RUN python manage.py collectstatic --noinput || true  # Avoids failure if staticfiles are not configured
 
-# port 
+# Expose port 8000 for Django
 EXPOSE 8000
 
 # Start Django app with Gunicorn
