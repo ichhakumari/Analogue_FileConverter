@@ -1,1 +1,1 @@
-web: gunicorn file_converstion.wsgi:application
+apt install openbabel -y && web: gunicorn file_converstion.wsgi:application
