@@ -36,6 +36,7 @@
 function convertFile() {
     let formData = new FormData(document.getElementById("upload-form"));
     console.log("Sending request to server...");
+    const CONVERT_URL = "{% url 'mol2_to_pdb' %}";
 
     fetch(CONVERT_URL, {  // Use the Django URL variable from the template
         method: "POST",
