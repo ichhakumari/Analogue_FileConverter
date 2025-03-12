@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*','analougefileconvertor-production.up.railway.app']
 
+# ALLOWED_HOSTS = ["converter.railway.app", "localhost"]
+
 CSRF_TRUSTED_ORIGINS = [
     'https://web-production-b4c53.up.railway.app'
 ]
@@ -144,6 +146,10 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static")  
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+
+
+
 
 
 
