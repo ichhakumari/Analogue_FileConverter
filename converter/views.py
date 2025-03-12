@@ -531,6 +531,7 @@ def pdb_to_mol2(request):
 #======================================================================================================================
 # mol2_to_pdb
 
+
 def mol2_pdb(request):
     return render(request, 'mol2topdb.html')
 
@@ -538,7 +539,7 @@ def mol2_to_pdb(request):
     if request.method == 'POST' and request.FILES.get('file'): 
         uploaded_file = request.FILES['file']
         input_path = os.path.join(UPLOAD_DIR, uploaded_file.name)  
-        output_filename = uploaded_file.name.replace(".mol2", ".pdb")  
+        output_filename = uploaded_file.name.replace(".mol2" ,".pdb")  
         output_path = os.path.join(OUTPUT_DIR, output_filename)  
 
         print(f"Input file saved at: {input_path}")
