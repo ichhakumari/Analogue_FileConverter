@@ -1,20 +1,29 @@
-# Use official Python image
+
+#  Python image
 FROM python:3.10
 
-# Set the working directory inside the container
+# Set working directory 
 WORKDIR /app
+
+# Install system dependencies including Open Babel
+RUN apt-get update && apt-get install -y \
+    openbabel \
+    && rm -rf /var/lib/apt/lists/*
+
+# Verify Open Babel installation
+RUN obabel -V
 
 # Copy project files into the container
 COPY . .
 
-# Install dependencies
+# Install Python dependencies
 RUN pip install --upgrade pip setuptools wheel
 RUN pip install -r requirements.txt
 
 # Collect static files (optional)
 RUN python manage.py collectstatic --noinput || true
 
-# Expose the port (for documentation, not necessary for binding)
+# Expose the port (used for deployment)
 EXPOSE 8000
 
 # Correctly use the PORT environment variable in CMD
