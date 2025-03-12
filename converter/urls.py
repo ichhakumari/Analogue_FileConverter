@@ -12,6 +12,7 @@ urlpatterns = [
     path('sdf-smi/', views.sdf_smi, name='sdf_smi'), 
 
     path('smi-pdb/',views.smi_pdb, name='smi_pdb'),
+    path('smi-to-pdb/',views.smi_to_pdb, name='smi_to_pdb'),
 
     path('pdb-to-smi/',views.pdb_to_smi, name='pdb_to_smi'),
     path('pdb-smi/',views.pdb_smi, name='pdb_smi'),
