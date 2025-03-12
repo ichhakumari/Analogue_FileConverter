@@ -17,5 +17,7 @@ RUN python manage.py collectstatic --noinput || true  # Avoids failure if static
 # Expose port 8000 for Django
 EXPOSE 8000
 
+
+
 # Start Django app with Gunicorn
 CMD ["gunicorn", "converter.wsgi:application", "--bind", "0.0.0.0:8000"]
